@@ -1,18 +1,23 @@
 import discord
+from discord import embeds
+from discord.ext import commands
 import os
+from dotenv import load_dotenv
 
-client = discord.Client()
+load_dotenv()
 
-@client.event
+token = os.getenv("TOKEN")
+intents = discord.Intents().all()
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+@bot.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
+    await bot.change_presence(activity=discord.Game("!help"))
+    print("Bot is ready! Welcome back {0.user}!".format(bot))
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
+bot.remove_command("help")
 
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
+bot.load_extension("cogs.reddit")
+bot.load_extension("cogs.help")
 
-client.run(os.getenv('TOKEN'))
+bot.run(token)
