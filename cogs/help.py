@@ -18,5 +18,5 @@ class help(commands.Cog):
         embed.add_field(name="!reddit", value="This is the reddit command!", inline=False)
         await ctx.send(embed=embed)
 
-def setup(bot):
-    bot.add_cog(help(bot))
+async def setup(bot):
+    await bot.add_cog(help(bot))

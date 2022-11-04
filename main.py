@@ -2,11 +2,8 @@ import discord
 from discord import embeds
 from discord.ext import commands
 import os
-from dotenv import load_dotenv
+import asyncio
 
-load_dotenv()
-
-token = os.getenv("TOKEN")
 intents = discord.Intents().all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -16,8 +13,15 @@ async def on_ready():
     print("Bot is ready! Welcome back {0.user}!".format(bot))
 
 bot.remove_command("help")
+async def main():
+    async with bot:
+        await bot.load_extension("cogs.reddit")
+        await bot.load_extension("cogs.help")
+        await bot.load_extension("cogs.valorant")
+        await bot.load_extension("cogs.logger")
+        await bot.load_extension("cogs.weather")
+        await bot.load_extension("cogs.starboard")
 
-bot.load_extension("cogs.reddit")
-bot.load_extension("cogs.help")
+        await bot.start(os.getenv("TOKEN"))
 
-bot.run(token)
+asyncio.run(main())

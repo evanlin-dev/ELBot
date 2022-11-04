@@ -9,24 +9,58 @@ clientId = os.getenv("CLIENT_ID")
 clientSecret = os.getenv("CLIENT_SECRET")
 username = os.getenv("USERNAME")
 password = os.getenv("PASSWORD")
-userAgent = {"User-Agent": "ELBot"}
-reddit = asyncpraw.Reddit(
-    client_id=clientId, 
-    client_secret=clientSecret, 
-    user_agent=userAgent, 
-    username=username, 
-    password=password)
+userAgent = os.getenv("USER_AGENT")
 
 class reddit(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.reddit = asyncpraw.Reddit(
+                       client_id = clientId, 
+                       client_secret = clientSecret, 
+                       username = username, 
+                       password = password,
+                       user_agent = userAgent)
+
+        self.reddit.read_only = True
 
     @commands.command()
-    async def reddit(self, ctx):
-        subreddit = await reddit.subreddit(ctx)
-        hotPosts = subreddit.top(limit=10)
-        for post in hotPosts:
-            await ctx.send(f"Found post: {post['data']['title']}")
+    async def top(self, ctx, sub):
+        posts = await self.reddit.subreddit(sub, fetch=True)
+        async for post in posts.top(limit=10):
+            embed = discord.Embed(
+                title=post.title,
+                url="https://www.reddit.com"+post.permalink,
+                description=post.author,
+                color=discord.Color.blue()
+            )
+            embed.set_image(url=post.url)
+            await ctx.send(embed=embed)
+            
+    @commands.command()
+    async def random(self, ctx, sub):
+        posts = await self.reddit.subreddit(sub, fetch=True)
+        post = random.choice([post async for post in posts.hot(limit=25)])
+        embed = discord.Embed(
+            title=post.title,
+            url="https://www.reddit.com"+post.permalink,
+            description=post.author,
+            color=discord.Color.blue()
+        )
+        embed.set_image(url=post.url)
+        await ctx.send(embed=embed)
+    
+    @commands.command()
+    async def meme(self, ctx):
+        posts = await self.reddit.subreddit("memes", fetch=True)
+        post = random.choice([post async for post in posts.hot(limit=25)])
+        embed = discord.Embed(
+            title=post.title,
+            url="https://www.reddit.com"+post.permalink,
+            description=post.author,
+            color=discord.Color.blue()
+        )
+        embed.set_image(url=post.url)
+        await ctx.send(embed=embed)
 
-def setup(bot):
-    bot.add_cog(reddit(bot))
+async def setup(bot):
+    await bot.add_cog(reddit(bot))
