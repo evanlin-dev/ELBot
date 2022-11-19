@@ -21,6 +21,7 @@ async def main():
         await bot.load_extension("cogs.logger")
         await bot.load_extension("cogs.weather")
         await bot.load_extension("cogs.starboard")
+        await bot.load_extension("cogs.clear")
 
         await bot.start(os.getenv("TOKEN"))
 

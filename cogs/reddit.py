@@ -33,6 +33,7 @@ class reddit(commands.Cog):
                 description=post.author,
                 color=discord.Color.blue()
             )
+            embed.set_footer(text="⬆ "+str(post.ups)+" ⬇"+str(post.downs))
             embed.set_image(url=post.url)
             await ctx.send(embed=embed)
             
@@ -46,6 +47,7 @@ class reddit(commands.Cog):
             description=post.author,
             color=discord.Color.blue()
         )
+        embed.set_footer(text="⬆"+str(post.ups)+" ⬇"+str(post.downs))
         embed.set_image(url=post.url)
         await ctx.send(embed=embed)
     
@@ -56,9 +58,10 @@ class reddit(commands.Cog):
         embed = discord.Embed(
             title=post.title,
             url="https://www.reddit.com"+post.permalink,
-            description=post.author,
-            color=discord.Color.blue()
+            description="Posted by u/"+post.author,
+            color=discord.Color.blue(),
         )
+        embed.set_footer(text="⬆ "+str(post.ups)+" ⬇"+str(post.downs))
         embed.set_image(url=post.url)
         await ctx.send(embed=embed)
 
